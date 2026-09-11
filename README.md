@@ -17,6 +17,13 @@ Site estático (HTML puro, sem build), responsivo para mobile, tablet e desktop.
 ├── android-chrome-512x512.png
 ├── site.webmanifest
 ├── og-image.jpg                 # imagem de compartilhamento (WhatsApp, redes sociais)
+├── img/                         # imagens da página — cache de 1 ano via vercel.json
+│   ├── hero-desktop.webp        # 1800×1250 — só baixa acima de 781px
+│   ├── hero-mobile.webp         #  900×1600 — só baixa até 780px
+│   ├── sobre-desktop.webp
+│   ├── sobre-mobile.webp
+│   ├── logo-pro.png             # usado em dois lugares, um arquivo só
+│   └── logo-pro-lockup.png
 ├── robots.txt
 └── vercel.json                  # cache de assets estáticos na Vercel
 ```
