@@ -1076,136 +1076,6 @@
   .pp-ico--hero svg { width: 21px; height: 21px; }
 }
 
-/* ===========================================================================
-   EMPILHAMENTO EM PASTA (teste)
-   Cada seção é uma pasta: canto de cima arredondado, subindo sobre a anterior.
-   Como todas têm o mesmo fundo, a aba só se lê contra LUZ — daí a .pasta-luz
-   no pé de cada seção. A seção de cima, opaca, recorta esse brilho, e é o
-   recorte que desenha a aba.
-   =========================================================================== */
-.pasta {
-  border-radius: clamp(24px,3vw,38px) clamp(24px,3vw,38px) 0 0;
-  margin-top: clamp(-56px,-4.6vw,-36px);
-}
-
-/* a luz no pé de cada seção. Sem elemento próprio não dá: ::before é a malha
-   e ::after é o grão da .surface. */
-.pasta-luz {
-  position: absolute;
-  inset: auto 0 0 0;
-  height: clamp(150px,20vw,260px);
-  z-index: -1;
-  pointer-events: none;
-  mix-blend-mode: screen;
-  /* dourado: é o contraste que a borda escura da pasta seguinte recorta */
-  background: radial-gradient(124% 100% at 50% 114%,
-    rgba(255, 214, 138, 0.46) 0%,
-    rgba(232, 178, 82, 0.24) 28%,
-    rgba(198, 142, 52, 0.09) 50%,
-    transparent 74%);
-}
-
-/* o empilhamento precisa de ordem explícita: #profissionais já vem com
-   z-index 3 do .depois, e um irmão em z-index auto cairia atrás dele */
-#profissionais { z-index: 3; }
-#recebe        { z-index: 4; }
-#sobre         { z-index: 5; }
-#faq           { z-index: 6; }
-#contato       { z-index: 7; }
-.site-footer   { z-index: 8; }
-
-/* o rodapé já tem o próprio brilho, bem mais forte: aqui a luz de pasta
-   só duplicaria o efeito */
-.site-footer .pasta-luz { display: none; }
-
-/* ---------------------------------------------------------------------------
-   Círculo numerado no canto da pasta.
-   A referência tem o círculo encaixado num RECORTE da borda. Aqui o recorte é
-   o próprio anel: o elemento de fora é pintado com a cor da base e serve de
-   vão, e o disco laranja vive dentro dele. Sobre a faixa dourada da seção
-   anterior o vão aparece como um corte limpo; sobre a seção, ele some na cor
-   do fundo. Mesma leitura, sem máscara nem SVG.
-
-   Numeral escuro sobre o laranja: 5,4:1. O inverso (claro sobre laranja) dá
-   3,1:1 e não passa — é a mesma razão do botão do WhatsApp.
-   --------------------------------------------------------------------------- */
-.pasta-num {
-  position: absolute;
-  /* topo do círculo na MESMA LINHA do topo da seção, como na referência */
-  top: 0;
-  right: var(--num-x);
-  width: var(--num-d);
-  height: var(--num-d);
-  border-radius: 50%;
-  /* sem anel pintado: a folga agora é recortada da seção, é vão de verdade */
-  display: grid;
-  place-items: center;
-  z-index: 4;
-  pointer-events: none;
-}
-.pasta-num > span {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(150deg, #FF8A4F 0%, #FF5623 58%, #E8480F 100%);
-  color: #1A1C1F;
-  font-family: 'Michroma', 'Segoe UI', sans-serif;
-  font-size: clamp(11px,1.15vw,14px);
-  letter-spacing: .02em;
-  box-shadow:
-    inset 0 1.5px 0 rgba(255,255,255,.30),
-    0 8px 22px -8px rgba(255,86,35,.55);
-}
-
-/* ---------------------------------------------------------------------------
-   RECORTE DA PASTA
-   A cor da base sai da seção e vem para esta camada; é só ela que leva a
-   máscara. O círculo é irmão desta camada, não filho — por isso sobrevive ao
-   furo. E o conteúdo da seção (inclusive os cartões de vidro) fica fora da
-   máscara, sem virar backdrop root.
-
-   O furo é concêntrico com o círculo: centro em y = D/2, raio D/2 + folga.
-   Logo o topo do círculo encosta na linha de cima e a folga é vazio.
-   --------------------------------------------------------------------------- */
-.pasta-nivel {
-  --num-d: clamp(48px,5.6vw,64px);     /* diâmetro do círculo */
-  --num-gap: clamp(6px,0.75vw,10px);   /* a folga vazia em volta */
-  --num-x: clamp(20px,4vw,56px);       /* distância da borda direita */
-  background: transparent;             /* a cor mudou-se para .pasta-fundo */
-}
-.pasta-fundo {
-  position: absolute;
-  inset: 0;
-  z-index: -2;                         /* abaixo da malha e do grão */
-  pointer-events: none;
-  background: var(--pp-base);
-  border-radius: inherit;
-  -webkit-mask-image: radial-gradient(
-    circle calc(var(--num-d) / 2 + var(--num-gap))
-    at calc(100% - var(--num-x) - var(--num-d) / 2) calc(var(--num-d) / 2),
-    transparent 98%, #000 100%);
-          mask-image: radial-gradient(
-    circle calc(var(--num-d) / 2 + var(--num-gap))
-    at calc(100% - var(--num-x) - var(--num-d) / 2) calc(var(--num-d) / 2),
-    transparent 98%, #000 100%);
-}
-
-/* malha e grão também precisam do furo, senão deixam um véu dentro do vão */
-.pasta-nivel::before, .pasta-nivel::after {
-  -webkit-mask-composite: source-in;
-}
-.pasta-nivel::after {
-  -webkit-mask-image: radial-gradient(
-    circle calc(var(--num-d) / 2 + var(--num-gap))
-    at calc(100% - var(--num-x) - var(--num-d) / 2) calc(var(--num-d) / 2),
-    transparent 98%, #000 100%);
-          mask-image: radial-gradient(
-    circle calc(var(--num-d) / 2 + var(--num-gap))
-    at calc(100% - var(--num-x) - var(--num-d) / 2) calc(var(--num-d) / 2),
-    transparent 98%, #000 100%);
-}
 </style>
 <div style="width: 100%; font-family: 'Oxanium', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; color: #ECE8E3; position: relative;">
 
@@ -1340,10 +1210,7 @@
 <!-- Profissionais -->
   
 
-<section id="profissionais" class="pasta-nivel surface depois" style="padding: clamp(48px,6vw,72px) clamp(24px,5vw,64px) clamp(56px,7vw,88px);">
-    <span class="pasta-fundo" aria-hidden="true"></span>
-    <span class="pasta-num" aria-hidden="true"><span>01</span></span>
-    <span class="pasta-luz" aria-hidden="true"></span>
+<section id="profissionais" class="surface depois" style="padding: clamp(48px,6vw,72px) clamp(24px,5vw,64px) clamp(56px,7vw,88px);">
     <div style="max-width: 1280px; margin: 0 auto 40px; text-align: center;">
       <span class="pp-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2.6l2.4 1.7 2.9-.2 1 2.8 2.4 1.7-1 2.8 1 2.8-2.4 1.7-1 2.8-2.9-.2L12 21.4 9.6 19.7l-2.9.2-1-2.8L3.3 15.4l1-2.8-1-2.8 2.4-1.7 1-2.8 2.9.2z"/><path d="M9 12.2l2 2 4-4.2"/></svg></span>
       <h2 data-hl="portfólio|pro" style="font-family: 'Michroma', 'Segoe UI', sans-serif; font-weight: 400; font-size: clamp(20px,2.8vw,30px); text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.4; margin: 0 0 18px; color: #FDFCF4; white-space: pre-line;">Quem utiliza o Portfólio PRO</h2>
@@ -1746,10 +1613,7 @@
 
 
     <!-- Processo: conversa + slide (auto-preenchimento) -->
-  <section id="recebe" class="pasta-nivel pasta surface" style="padding: clamp(64px,8vw,120px) clamp(24px,5vw,64px);">
-    <span class="pasta-fundo" aria-hidden="true"></span>
-    <span class="pasta-num" aria-hidden="true"><span>02</span></span>
-    <span class="pasta-luz" aria-hidden="true"></span>
+  <section id="recebe" class="surface" style="padding: clamp(64px,8vw,120px) clamp(24px,5vw,64px);">
     <div style="max-width: 1280px; margin: 0 auto;">
       <div style="max-width: 680px; margin: 0 auto 20px; text-align: center;">
         <span class="pp-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 2.8h8l4 4v14.4H6z"/><path d="M14 2.8v4h4"/><path d="M9 12h6M9 15.6h6M9 8.4h2.5"/></svg></span>
@@ -2019,10 +1883,7 @@
   
 
     <!-- Sobre -->
-  <div id="sobre" class="pasta-nivel pasta surface" style="position: relative; scroll-margin-top: 100px;">
-    <span class="pasta-fundo" aria-hidden="true"></span>
-    <span class="pasta-num" aria-hidden="true"><span>03</span></span>
-    <span class="pasta-luz" aria-hidden="true"></span>
+  <div id="sobre" class="surface" style="position: relative; scroll-margin-top: 100px;">
     <section class="sobre-desktop-wrap" style="position: relative; overflow: hidden; padding: clamp(120px,15vw,200px) clamp(24px,5vw,64px);">
       <img src="/img/sobre-desktop.webp" alt="Luis Esteves, fundador do Portfólio PRO" loading="lazy" decoding="async" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 68% 35%; z-index: 0;" width="900" height="624">
       <div style="position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, rgba(26,28,31,0.96) 0%, rgba(26,28,31,0.85) 36%, rgba(26,28,31,0.42) 60%, rgba(26,28,31,0.1) 80%), linear-gradient(180deg, rgba(26,28,31,0.4) 0%, rgba(26,28,31,0) 20%, rgba(26,28,31,0) 68%, #1A1C1F 100%);"></div>
@@ -2067,10 +1928,7 @@ Esteves</h2>
   
 
 
-<section id="faq" class="pasta-nivel pasta surface" style="padding: clamp(64px,8vw,120px) clamp(24px,5vw,64px);">
-    <span class="pasta-fundo" aria-hidden="true"></span>
-    <span class="pasta-num" aria-hidden="true"><span>04</span></span>
-    <span class="pasta-luz" aria-hidden="true"></span>
+<section id="faq" class="surface" style="padding: clamp(64px,8vw,120px) clamp(24px,5vw,64px);">
     <div style="max-width: 840px; margin: 0 auto;">
       <div style="max-width: 640px; margin: 0 auto 44px; text-align: center;">
         <span class="pp-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.2"/><path d="M9.4 9.2a2.7 2.7 0 1 1 3.4 2.6c-.6.2-.9.7-.9 1.3v.7"/><path d="M12 17.2h.01"/></svg></span>
@@ -2119,10 +1977,7 @@ com dúvidas?</h2>
 
 
 
-<section id="contato" class="pasta-nivel pasta surface" style="padding: clamp(64px,10vw,120px) clamp(24px,5vw,64px); text-align: center;">
-    <span class="pasta-fundo" aria-hidden="true"></span>
-    <span class="pasta-num" aria-hidden="true"><span>05</span></span>
-    <span class="pasta-luz" aria-hidden="true"></span>
+<section id="contato" class="surface" style="padding: clamp(64px,10vw,120px) clamp(24px,5vw,64px); text-align: center;">
     <div style="max-width: 640px; margin: 0 auto; background: linear-gradient(155deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 40%), rgba(38,40,44,0.4); backdrop-filter: blur(10px) saturate(140%); -webkit-backdrop-filter: blur(10px) saturate(140%); border-radius: 24px; padding: clamp(40px,6vw,64px) clamp(28px,5vw,56px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);">
       <img src="/img/logo-pro.png" alt="Portfólio PRO" style="height: 30px; width: auto; display: block; margin: 0 auto 28px;" width="1080" height="300" loading="lazy" decoding="async">
       <h2 data-hl="entender|o|que|seu|material|precisa" style="font-family: 'Michroma', 'Segoe UI', sans-serif; font-weight: 400; font-size: clamp(22px,3vw,32px); text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.35; color: #FDFCF4; margin: 0 0 16px; white-space: pre-line;">De 30 a 45 minutos para entender o que o seu material precisa mostrar</h2>
@@ -2139,8 +1994,7 @@ com dúvidas?</h2>
   </section>
 
   <!-- Footer -->
-  <footer class="pasta-nivel pasta site-footer surface" style="padding: clamp(72px,10vw,110px) clamp(24px,5vw,64px) clamp(180px,26vw,240px);">
-    <span class="pasta-luz" aria-hidden="true"></span>
+  <footer class="site-footer surface" style="padding: clamp(72px,10vw,110px) clamp(24px,5vw,64px) clamp(180px,26vw,240px);">
     <div style="max-width: 1060px; margin: 0 auto; padding: clamp(32px,4vw,44px) clamp(24px,5vw,56px) 28px; text-align: center; background: linear-gradient(155deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 40%), rgba(38,40,44,0.4); backdrop-filter: blur(10px) saturate(140%); -webkit-backdrop-filter: blur(10px) saturate(140%); border-radius: 24px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);">
       <div style="display: flex; flex-wrap: wrap; gap: 36px 56px; justify-content: center; text-align: center; margin-bottom: 30px;">
         <div style="max-width: 340px;">
