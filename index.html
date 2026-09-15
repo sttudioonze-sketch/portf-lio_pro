@@ -761,11 +761,12 @@
     pointer-events: none;
   }
   .divisor-frase {
-    position: absolute; left: 50%; top: 62%; transform: translate(-50%,-50%); z-index: 2;
+    position: absolute; left: 50%; top: 54%; transform: translate(-50%,-50%); z-index: 2;
     margin: 0; text-align: center;
-    /* largura em % da ARTE: o círculo tem 60% da largura do desenho, então
-       54% cabe dentro dele em qualquer tela, sem media query */
-    width: 54%;
+    /* largura em % da ARTE: o círculo tem 60% da largura do desenho. 42%
+       deixa a frase bem dentro da linha, empilhada e central em vez de
+       esticada de ponta a ponta. */
+    width: 42%;
     font-family: 'Michroma', system-ui, sans-serif; font-size: clamp(12.5px,1.95vw,26px);
     line-height: 1.5; text-transform: uppercase; color: #FDFCF4;
   }
@@ -1041,25 +1042,78 @@
     content: "";
     position: absolute;
     inset: auto 0 0 0;
-    height: 62%;          /* so a metade de baixo: o texto vive acima dela */
+    height: 72%;          /* a faixa de brilho sobe um pouco, sem alcançar o texto */
     z-index: -1;
     pointer-events: none;
     mix-blend-mode: screen;
-    background: radial-gradient(142% 104% at 50% 108%,
-      rgba(255, 142, 86, 0.92) 0%,
-      rgba(255, 96, 45, 0.52) 26%,
-      rgba(255, 150, 95, 0.20) 52%,
-      transparent 78%);
+    background: radial-gradient(156% 88% at 50% 100%,
+      rgba(255, 156, 104, 1) 0%,
+      rgba(255, 122, 64, 0.88) 18%,
+      rgba(255, 96, 45, 0.62) 34%,
+      rgba(255, 112, 56, 0.32) 50%,
+      rgba(255, 150, 96, 0.12) 66%,
+      transparent 84%);
   }
 
 /* o texto de apoio da dobra 2, logo abaixo do círculo */
+/* dentro do círculo, logo abaixo da linha de meio-campo (que fica em 79%
+   da altura do desenho). A 84% ainda há 60% de largura de círculo. */
 .divisor-apoio {
-  margin: clamp(12px,1.8vw,26px) 0 0;
-  width: min(620px, 84vw);
+  position: absolute; left: 50%; top: 84%; transform: translate(-50%,-50%);
+  z-index: 2; margin: 0; width: 46%;
   text-align: center;
-  font-size: 15.5px; line-height: 1.65; color: #8f8c87;
+  font-size: 15px; line-height: 1.6; color: #A8A099;
 }
-@media (max-width: 780px) { .divisor-apoio { font-size: 14px; } }
+@media (max-width: 780px) { .divisor-apoio { font-size: 12.5px; width: 50%; } }
+
+/* o ícone da hero é maior: ali ele é o primeiro elemento da página */
+.pp-ico--hero { width: 54px; height: 54px; border-radius: 16px; margin-bottom: 22px; }
+.pp-ico--hero svg { width: 25px; height: 25px; }
+@media (max-width: 520px) {
+  .pp-ico--hero { width: 46px; height: 46px; border-radius: 14px; margin-bottom: 18px; }
+  .pp-ico--hero svg { width: 21px; height: 21px; }
+}
+
+/* ===========================================================================
+   EMPILHAMENTO EM PASTA (teste)
+   Cada seção é uma pasta: canto de cima arredondado, subindo sobre a anterior.
+   Como todas têm o mesmo fundo, a aba só se lê contra LUZ — daí a .pasta-luz
+   no pé de cada seção. A seção de cima, opaca, recorta esse brilho, e é o
+   recorte que desenha a aba.
+   =========================================================================== */
+.pasta {
+  border-radius: clamp(18px,2.4vw,30px) clamp(18px,2.4vw,30px) 0 0;
+  margin-top: clamp(-40px,-3.4vw,-26px);
+}
+
+/* a luz no pé de cada seção. Sem elemento próprio não dá: ::before é a malha
+   e ::after é o grão da .surface. */
+.pasta-luz {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: clamp(150px,20vw,260px);
+  z-index: -1;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  background: radial-gradient(120% 100% at 50% 116%,
+    rgba(255, 126, 64, 0.30) 0%,
+    rgba(255, 86, 35, 0.13) 32%,
+    rgba(255, 160, 105, 0.045) 54%,
+    transparent 74%);
+}
+
+/* o empilhamento precisa de ordem explícita: #profissionais já vem com
+   z-index 3 do .depois, e um irmão em z-index auto cairia atrás dele */
+#profissionais { z-index: 3; }
+#recebe        { z-index: 4; }
+#sobre         { z-index: 5; }
+#faq           { z-index: 6; }
+#contato       { z-index: 7; }
+.site-footer   { z-index: 8; }
+
+/* o rodapé já tem o próprio brilho, bem mais forte: aqui a luz de pasta
+   só duplicaria o efeito */
+.site-footer .pasta-luz { display: none; }
 </style>
 <div style="width: 100%; font-family: 'Oxanium', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; color: #ECE8E3; position: relative;">
 
@@ -1107,6 +1161,7 @@
       <div style="max-width: 440px;">
         
 
+        <span class="pp-ico pp-ico--hero" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7.4 3.6h3.9l1.2 1.4h5.3"/><path d="M5.4 6.3h4.5l1.2 1.4h6.6"/><path d="M3.2 9.1h5.2l1.3 1.5h8.6a1.7 1.7 0 0 1 1.7 1.7v6.2a1.7 1.7 0 0 1-1.7 1.7H4.9a1.7 1.7 0 0 1-1.7-1.7z"/></svg></span>
         <h1 id="heroTitle" class="type-target hero-h1" data-hl="profissionais|do|futebol" style="font-family: 'Michroma', 'Segoe UI', sans-serif; font-weight: 400; font-size: clamp(21px,2.6vw,32px); line-height: 1.32; letter-spacing: 0.005em; text-transform: uppercase; color: #FDFCF4; margin: 0 0 24px;">Portfólios para profissionais do futebol</h1>
 
         <p style="font-size: 16px; line-height: 1.65; color: #B3ABA3; max-width: 420px; margin: 0 0 36px;">
@@ -1135,6 +1190,7 @@
       <div style="max-width: 640px;">
         
 
+        <span class="pp-ico pp-ico--hero" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7.4 3.6h3.9l1.2 1.4h5.3"/><path d="M5.4 6.3h4.5l1.2 1.4h6.6"/><path d="M3.2 9.1h5.2l1.3 1.5h8.6a1.7 1.7 0 0 1 1.7 1.7v6.2a1.7 1.7 0 0 1-1.7 1.7H4.9a1.7 1.7 0 0 1-1.7-1.7z"/></svg></span>
         <h1 id="heroTitleMobile" class="type-target hero-h1" data-hl="profissionais|do|futebol" style="font-family: 'Michroma', 'Segoe UI', sans-serif; font-weight: 400; font-size: clamp(26px,3.8vw,46px); line-height: 1.32; letter-spacing: 0.005em; text-transform: uppercase; color: #FDFCF4; margin: 0 0 22px;">Portfólios para profissionais do futebol</h1>
 
         <p style="font-size: 17.5px; line-height: 1.65; color: #B3ABA3; max-width: 520px; margin: 0 0 24px;">
@@ -1185,14 +1241,15 @@
       <circle cx="700" cy="600" r="415" stroke="#FFF6EC" stroke-opacity=".5" stroke-width="1.4"/>
     </svg>
 
-    <p class="divisor-frase" data-hl="mesmo|nível">O seu material precisa estar no mesmo nível da carreira que ele representa</p></div><p class="divisor-apoio">Quem avalia dedica poucos minutos a cada apresentação — e nesses minutos o padrão do material é lido como o padrão do profissional.</p></div>
+    <p class="divisor-frase" data-hl="mesmo|nível">O seu material precisa estar no mesmo nível da carreira que ele representa</p><p class="divisor-apoio">Quem avalia dedica poucos minutos a cada apresentação — e nesses minutos o padrão do material é lido como o padrão do profissional.</p></div></div>
   </div>
 </div>
 
 <!-- Profissionais -->
   
 
-<section id="profissionais" class="surface depois" style="padding: clamp(48px,6vw,72px) clamp(24px,5vw,64px) clamp(56px,7vw,88px);">
+<section id="profissionais" class="pasta-nivel surface depois" style="padding: clamp(48px,6vw,72px) clamp(24px,5vw,64px) clamp(56px,7vw,88px);">
+    <span class="pasta-luz" aria-hidden="true"></span>
     <div style="max-width: 1280px; margin: 0 auto 40px; text-align: center;">
       <span class="pp-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2.6l2.4 1.7 2.9-.2 1 2.8 2.4 1.7-1 2.8 1 2.8-2.4 1.7-1 2.8-2.9-.2L12 21.4 9.6 19.7l-2.9.2-1-2.8L3.3 15.4l1-2.8-1-2.8 2.4-1.7 1-2.8 2.9.2z"/><path d="M9 12.2l2 2 4-4.2"/></svg></span>
       <h2 data-hl="portfólio|pro" style="font-family: 'Michroma', 'Segoe UI', sans-serif; font-weight: 400; font-size: clamp(20px,2.8vw,30px); text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.4; margin: 0 0 18px; color: #FDFCF4; white-space: pre-line;">Quem utiliza o Portfólio PRO</h2>
@@ -1595,7 +1652,8 @@
 
 
     <!-- Processo: conversa + slide (auto-preenchimento) -->
-  <section id="recebe" class="surface" style="padding: clamp(64px,8vw,120px) clamp(24px,5vw,64px);">
+  <section id="recebe" class="pasta-nivel pasta surface" style="padding: clamp(64px,8vw,120px) clamp(24px,5vw,64px);">
+    <span class="pasta-luz" aria-hidden="true"></span>
     <div style="max-width: 1280px; margin: 0 auto;">
       <div style="max-width: 680px; margin: 0 auto 20px; text-align: center;">
         <span class="pp-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 2.8h8l4 4v14.4H6z"/><path d="M14 2.8v4h4"/><path d="M9 12h6M9 15.6h6M9 8.4h2.5"/></svg></span>
@@ -1865,7 +1923,8 @@
   
 
     <!-- Sobre -->
-  <div id="sobre" class="surface" style="position: relative; scroll-margin-top: 100px;">
+  <div id="sobre" class="pasta-nivel pasta surface" style="position: relative; scroll-margin-top: 100px;">
+    <span class="pasta-luz" aria-hidden="true"></span>
     <section class="sobre-desktop-wrap" style="position: relative; overflow: hidden; padding: clamp(120px,15vw,200px) clamp(24px,5vw,64px);">
       <img src="/img/sobre-desktop.webp" alt="Luis Esteves, fundador do Portfólio PRO" loading="lazy" decoding="async" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 68% 35%; z-index: 0;" width="900" height="624">
       <div style="position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, rgba(26,28,31,0.96) 0%, rgba(26,28,31,0.85) 36%, rgba(26,28,31,0.42) 60%, rgba(26,28,31,0.1) 80%), linear-gradient(180deg, rgba(26,28,31,0.4) 0%, rgba(26,28,31,0) 20%, rgba(26,28,31,0) 68%, #1A1C1F 100%);"></div>
@@ -1910,7 +1969,8 @@ Esteves</h2>
   
 
 
-<section id="faq" class="surface" style="padding: clamp(64px,8vw,120px) clamp(24px,5vw,64px);">
+<section id="faq" class="pasta-nivel pasta surface" style="padding: clamp(64px,8vw,120px) clamp(24px,5vw,64px);">
+    <span class="pasta-luz" aria-hidden="true"></span>
     <div style="max-width: 840px; margin: 0 auto;">
       <div style="max-width: 640px; margin: 0 auto 44px; text-align: center;">
         <span class="pp-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.2"/><path d="M9.4 9.2a2.7 2.7 0 1 1 3.4 2.6c-.6.2-.9.7-.9 1.3v.7"/><path d="M12 17.2h.01"/></svg></span>
@@ -1959,7 +2019,8 @@ com dúvidas?</h2>
 
 
 
-<section id="contato" class="surface" style="padding: clamp(64px,10vw,120px) clamp(24px,5vw,64px); text-align: center;">
+<section id="contato" class="pasta-nivel pasta surface" style="padding: clamp(64px,10vw,120px) clamp(24px,5vw,64px); text-align: center;">
+    <span class="pasta-luz" aria-hidden="true"></span>
     <div style="max-width: 640px; margin: 0 auto; background: linear-gradient(155deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 40%), rgba(38,40,44,0.4); backdrop-filter: blur(10px) saturate(140%); -webkit-backdrop-filter: blur(10px) saturate(140%); border-radius: 24px; padding: clamp(40px,6vw,64px) clamp(28px,5vw,56px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);">
       <img src="/img/logo-pro.png" alt="Portfólio PRO" style="height: 30px; width: auto; display: block; margin: 0 auto 28px;" width="1080" height="300" loading="lazy" decoding="async">
       <h2 data-hl="entender|o|que|seu|material|precisa" style="font-family: 'Michroma', 'Segoe UI', sans-serif; font-weight: 400; font-size: clamp(22px,3vw,32px); text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.35; color: #FDFCF4; margin: 0 0 16px; white-space: pre-line;">De 30 a 45 minutos para entender o que o seu material precisa mostrar</h2>
@@ -1976,11 +2037,12 @@ com dúvidas?</h2>
   </section>
 
   <!-- Footer -->
-  <footer class="site-footer surface" style="padding: clamp(72px,10vw,110px) clamp(24px,5vw,64px) clamp(96px,14vw,120px);">
-    <div style="max-width: 1280px; margin: 0 auto; padding: 0 clamp(24px,5vw,56px) 28px;">
-      <div style="display: flex; flex-wrap: wrap; gap: 40px; justify-content: space-between; margin-bottom: 30px;">
+  <footer class="pasta-nivel pasta site-footer surface" style="padding: clamp(72px,10vw,110px) clamp(24px,5vw,64px) clamp(180px,26vw,240px);">
+    <span class="pasta-luz" aria-hidden="true"></span>
+    <div style="max-width: 1060px; margin: 0 auto; padding: clamp(32px,4vw,44px) clamp(24px,5vw,56px) 28px; text-align: center; background: linear-gradient(155deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 40%), rgba(38,40,44,0.4); backdrop-filter: blur(10px) saturate(140%); -webkit-backdrop-filter: blur(10px) saturate(140%); border-radius: 24px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);">
+      <div style="display: flex; flex-wrap: wrap; gap: 36px 56px; justify-content: center; text-align: center; margin-bottom: 30px;">
         <div style="max-width: 340px;">
-          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
+          <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 14px;">
             <span style="width: 6px; height: 6px; border-radius: 50%; background: #FF5623; flex-shrink: 0;"></span>
             <span style="font-family: 'Michroma', 'Segoe UI', sans-serif; font-size: 14px; font-weight: 400; letter-spacing: 0.02em; text-transform: uppercase; color: #FDFCF4;">Portfólio PRO</span>
           </div>
@@ -1998,7 +2060,7 @@ com dúvidas?</h2>
           <p style="margin: 0;"><a class="footer-link" href="https://www.portfolio.pro.br" target="_blank" rel="noopener noreferrer" style="font-size: 13px; color: #B3ABA3; text-decoration: none;">www.portfolio.pro.br</a></p>
         </div>
       </div>
-      <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 18px; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between;">
+      <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 18px; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: center; text-align: center;">
         <p style="font-size: 12px; color: #8f8c87; margin: 0; max-width: 480px;">Desenvolvimento de portfólios e CVs exclusivos para profissionais do futebol.</p>
         <p style="font-size: 12px; color: #8f8c87; margin: 0;">Todos os direitos reservados.</p>
       </div>
