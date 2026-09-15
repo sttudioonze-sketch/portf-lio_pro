@@ -745,7 +745,10 @@
     -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 15%, #000 100%);
             mask-image: linear-gradient(to bottom, transparent 0%, #000 15%, #000 100%);
   }
-  .divisor-arte { position: relative; flex-shrink: 0; width: min(1500px, 175vw); }
+  .divisor-bloco { display: flex; flex-direction: column; align-items: center; }
+  /* 1150 em vez de 1500: com 1500 a arte tinha 814px de altura e, somada ao
+     texto, não cabia numa tela de 900 — o arco nunca aparecia inteiro */
+  .divisor-arte { position: relative; flex-shrink: 0; width: min(1150px, 175vw); }
   .divisor-campo { width: 100%; height: auto; display: block; }
 
   /* bloom largo por trás do arco — é ele que dá o "aceso" */
@@ -759,17 +762,17 @@
   }
   .divisor-frase {
     position: absolute; left: 50%; top: 62%; transform: translate(-50%,-50%); z-index: 2;
-    margin: 0; width: min(560px, 76vw); text-align: center;
-    font-family: 'Michroma', system-ui, sans-serif; font-size: clamp(14px,1.7vw,20px);
+    margin: 0; text-align: center;
+    /* largura em % da ARTE: o círculo tem 60% da largura do desenho, então
+       54% cabe dentro dele em qualquer tela, sem media query */
+    width: 54%;
+    font-family: 'Michroma', system-ui, sans-serif; font-size: clamp(12.5px,1.95vw,26px);
     line-height: 1.5; text-transform: uppercase; color: #FDFCF4;
   }
 
   /* a seção seguinte sobe POR CIMA do arco */
   .depois {
-    position: relative;
-    /* 41 = acima da .page-luz (40) e abaixo do cabeçalho (50): o rodapé
-       fica preto de verdade enquanto o arco atrás continua aceso */
-    z-index: 41;
+    position: relative; z-index: 3;
     margin-top: -32vh;
     border-radius: clamp(20px,3vw,40px) clamp(20px,3vw,40px) 0 0;
     background: var(--pp-base);
@@ -1006,27 +1009,57 @@
    pendurado no meio de uma tela vazia antes do rodapé chegar.
    --------------------------------------------------------------------------- */
 @media (max-width: 780px) {
-  .divisor       { height: 90vh; }
-  .divisor-palco { height: 70vh; }
+  .divisor       { height: 76vh; }
+  .divisor-palco { height: 56vh; }
   .divisor-arte  { width: min(1500px, 148vw); }
 
   /* a frase tem duas metades de ~29 caracteres; a Michroma é larga, então a
      13px numa caixa de 76vw cada metade quebrava e deixava uma palavra órfã */
-  .divisor-frase { font-size: 12px; width: min(560px, 92vw); line-height: 1.55; }
+  .divisor-frase { line-height: 1.5; }
 
   /* o rodapé sobe mais: sem isto sobrava um vão escuro entre o arco e ele */
-  .depois        { margin-top: -26vh; }
-
-  /* o arco entra logo depois do botão, não meia tela abaixo */
-  #contato       { padding-bottom: 40px !important; }
+  .depois        { margin-top: -20vh; }
 }
 
 /* Em 320px a caixa da frase mede 294px e cada metade precisa de ~296px a
    12px — quebrava em 3 linhas. Bloco proprio E DEPOIS do de 780px: com a
    mesma especificidade, quem vence e quem vem por ultimo. */
 @media (max-width: 360px) {
-  .divisor-frase { font-size: 11px; }
+  .divisor-frase { font-size: 11.5px; }
 }
+
+/* ---------------------------------------------------------------------------
+   RODAPÉ — luz própria, atrás do conteúdo.
+   z-index 41 mantém o rodapé acima da .page-luz (40), que é fixa e mistura em
+   screen: sem isso ela volta a lavar o cartão. A luz daqui é do rodapé, entra
+   em ::after dentro do isolate da .surface (o ::before já é a malha) e fica
+   ATRÁS de tudo. O cartão é sólido, então ele recorta preto contra o brilho
+   em vez de brilhar junto.
+   --------------------------------------------------------------------------- */
+.site-footer { position: relative; }
+  .site-footer::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 62%;          /* so a metade de baixo: o texto vive acima dela */
+    z-index: -1;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    background: radial-gradient(142% 104% at 50% 108%,
+      rgba(255, 142, 86, 0.92) 0%,
+      rgba(255, 96, 45, 0.52) 26%,
+      rgba(255, 150, 95, 0.20) 52%,
+      transparent 78%);
+  }
+
+/* o texto de apoio da dobra 2, logo abaixo do círculo */
+.divisor-apoio {
+  margin: clamp(12px,1.8vw,26px) 0 0;
+  width: min(620px, 84vw);
+  text-align: center;
+  font-size: 15.5px; line-height: 1.65; color: #8f8c87;
+}
+@media (max-width: 780px) { .divisor-apoio { font-size: 14px; } }
 </style>
 <div style="width: 100%; font-family: 'Oxanium', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; color: #ECE8E3; position: relative;">
 
@@ -1063,7 +1096,7 @@
 
   <div class="hero-desktop-wrap">
 <!-- Hero -->
-  <section id="heroSection" style="position: relative; overflow: hidden; padding: clamp(150px,17vw,210px) clamp(24px,5vw,64px) clamp(72px,10vw,128px);">
+  <section id="heroSection" style="position: relative; overflow: hidden; padding: clamp(150px,17vw,210px) clamp(24px,5vw,64px) clamp(32px,4vw,56px);">
     
 
     <picture><source media="(min-width: 781px)" srcset="/img/hero-desktop.webp"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=" alt="Fundador do Portfólio PRO com notebook" fetchpriority="high" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 48% 20%; z-index: 0;"></picture>
@@ -1089,7 +1122,7 @@
 
 <div class="hero-mobile-wrap">
 <!-- Hero -->
-  <section id="heroSectionMobile" style="position: relative; overflow: hidden; padding: 0 0 clamp(64px,14vw,96px);">
+  <section id="heroSectionMobile" style="position: relative; overflow: hidden; padding: 0 0 clamp(20px,4vw,36px);">
     
 
     <div style="position: relative; width: 100%; height: clamp(320px,94vw,620px); overflow: hidden;">
@@ -1115,18 +1148,51 @@
   
 </div>
 
-  <!-- Profissionais -->
-  <section id="oportunidade" class="surface" style="padding: clamp(64px,8vw,112px) clamp(24px,5vw,64px); text-align: center;">
-    <div style="max-width: 860px; margin: 0 auto;">
-      <span class="pp-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M1.8 12S5.4 5.2 12 5.2 22.2 12 22.2 12 18.6 18.8 12 18.8 1.8 12 1.8 12z"/><circle cx="12" cy="12" r="3.1"/></svg></span>
-      <p data-hl="mesmo|nível" style="font-family: 'Michroma', 'Segoe UI', sans-serif; font-weight: 400; font-size: clamp(19px,3vw,32px); line-height: 1.55; text-transform: uppercase; letter-spacing: 0.01em; color: #FDFCF4; margin: 0 0 18px;">
-        O seu material precisa estar no mesmo nível da carreira que ele apresenta
-      </p>
-      <p style="font-size: 15.5px; color: #8f8c87; margin: 0;">Quem avalia dedica poucos minutos a cada apresentação — e nesses minutos o padrão do material é lido como o padrão do profissional.</p>
-    </div>
-  </section>
+  <div class="divisor">
+  <div class="divisor-palco">
+    <div class="divisor-bloco"><div class="divisor-arte"><svg class="divisor-campo" viewBox="0 0 1400 760" fill="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="arco" x1="700" y1="120" x2="700" y2="760" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stop-color="#FFF6EC"/>
+          <stop offset="18%"  stop-color="#FFD0A8"/>
+          <stop offset="46%"  stop-color="#FF8A47"/>
+          <stop offset="78%"  stop-color="#FF5623" stop-opacity=".45"/>
+          <stop offset="100%" stop-color="#FF5623" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="linha" x1="0" y1="0" x2="1400" y2="0" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stop-color="#FF5623" stop-opacity="0"/>
+          <stop offset="26%"  stop-color="#FF8A47" stop-opacity=".55"/>
+          <stop offset="50%"  stop-color="#FFD0A8" stop-opacity=".9"/>
+          <stop offset="74%"  stop-color="#FF8A47" stop-opacity=".55"/>
+          <stop offset="100%" stop-color="#FF5623" stop-opacity="0"/>
+        </linearGradient>
+        <filter id="brilho" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="16" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
 
-<section id="profissionais" class="surface" style="padding: clamp(48px,6vw,72px) clamp(24px,5vw,64px) clamp(56px,7vw,88px);">
+      <g filter="url(#brilho)">
+        <!-- linha de meio-campo -->
+        <line x1="0" y1="600" x2="1400" y2="600" stroke="url(#linha)" stroke-width="3"/>
+        <!-- círculo central -->
+        <circle cx="700" cy="600" r="420" stroke="url(#arco)" stroke-width="9"/>
+        <!-- marca do meio -->
+        <circle cx="700" cy="600" r="7" fill="#FFD0A8" fill-opacity=".85"/>
+      </g>
+
+      <!-- fio fino por dentro: é ele que dá a aresta "quente" da referência -->
+      <circle cx="700" cy="600" r="415" stroke="#FFF6EC" stroke-opacity=".5" stroke-width="1.4"/>
+    </svg>
+
+    <p class="divisor-frase" data-hl="mesmo|nível">O seu material precisa estar no mesmo nível da carreira que ele representa</p></div><p class="divisor-apoio">Quem avalia dedica poucos minutos a cada apresentação — e nesses minutos o padrão do material é lido como o padrão do profissional.</p></div>
+  </div>
+</div>
+
+<!-- Profissionais -->
+  
+
+<section id="profissionais" class="surface depois" style="padding: clamp(48px,6vw,72px) clamp(24px,5vw,64px) clamp(56px,7vw,88px);">
     <div style="max-width: 1280px; margin: 0 auto 40px; text-align: center;">
       <span class="pp-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2.6l2.4 1.7 2.9-.2 1 2.8 2.4 1.7-1 2.8 1 2.8-2.4 1.7-1 2.8-2.9-.2L12 21.4 9.6 19.7l-2.9.2-1-2.8L3.3 15.4l1-2.8-1-2.8 2.4-1.7 1-2.8 2.9.2z"/><path d="M9 12.2l2 2 4-4.2"/></svg></span>
       <h2 data-hl="portfólio|pro" style="font-family: 'Michroma', 'Segoe UI', sans-serif; font-weight: 400; font-size: clamp(20px,2.8vw,30px); text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.4; margin: 0 0 18px; color: #FDFCF4; white-space: pre-line;">Quem utiliza o Portfólio PRO</h2>
@@ -1819,7 +1885,7 @@ Esteves</h2>
 
     <section class="sobre-mobile-wrap" style="position: relative; overflow: hidden; padding: 0 0 clamp(56px,12vw,88px);">
       <div style="position: relative; width: 100%; height: clamp(280px,74vw,760px); overflow: hidden;">
-        <img src="/img/sobre-mobile.webp" alt="Luis Esteves, fundador do Portfólio PRO" loading="lazy" decoding="async" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; display: block;" width="640" height="1137">
+        <img src="/img/sobre-desktop.webp" alt="Luis Esteves, fundador do Portfólio PRO" loading="lazy" decoding="async" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 62% 50%; display: block;" width="900" height="624">
         <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(26,28,31,0.04) 0%, rgba(26,28,31,0.12) 55%, rgba(26,28,31,0.85) 88%, #1A1C1F 100%);"></div>
       </div>
       <div style="position: relative; z-index: 1; padding: clamp(28px,7vw,40px) clamp(24px,6vw,32px) 0;">
@@ -1910,49 +1976,8 @@ com dúvidas?</h2>
   </section>
 
   <!-- Footer -->
-  <div class="divisor">
-  <div class="divisor-palco">
-    <div class="divisor-arte"><svg class="divisor-campo" viewBox="0 0 1400 760" fill="none" aria-hidden="true">
-      <defs>
-        <linearGradient id="arco" x1="700" y1="120" x2="700" y2="760" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"   stop-color="#FFF6EC"/>
-          <stop offset="18%"  stop-color="#FFD0A8"/>
-          <stop offset="46%"  stop-color="#FF8A47"/>
-          <stop offset="78%"  stop-color="#FF5623" stop-opacity=".45"/>
-          <stop offset="100%" stop-color="#FF5623" stop-opacity="0"/>
-        </linearGradient>
-        <linearGradient id="linha" x1="0" y1="0" x2="1400" y2="0" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"   stop-color="#FF5623" stop-opacity="0"/>
-          <stop offset="26%"  stop-color="#FF8A47" stop-opacity=".55"/>
-          <stop offset="50%"  stop-color="#FFD0A8" stop-opacity=".9"/>
-          <stop offset="74%"  stop-color="#FF8A47" stop-opacity=".55"/>
-          <stop offset="100%" stop-color="#FF5623" stop-opacity="0"/>
-        </linearGradient>
-        <filter id="brilho" x="-60%" y="-60%" width="220%" height="220%">
-          <feGaussianBlur stdDeviation="16" result="b"/>
-          <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
-
-      <g filter="url(#brilho)">
-        <!-- linha de meio-campo -->
-        <line x1="0" y1="600" x2="1400" y2="600" stroke="url(#linha)" stroke-width="3"/>
-        <!-- círculo central -->
-        <circle cx="700" cy="600" r="420" stroke="url(#arco)" stroke-width="9"/>
-        <!-- marca do meio -->
-        <circle cx="700" cy="600" r="7" fill="#FFD0A8" fill-opacity=".85"/>
-      </g>
-
-      <!-- fio fino por dentro: é ele que dá a aresta "quente" da referência -->
-      <circle cx="700" cy="600" r="415" stroke="#FFF6EC" stroke-opacity=".5" stroke-width="1.4"/>
-    </svg>
-
-    <p class="divisor-frase">Quando a oportunidade aparece<br>seu material fala por você</p></div>
-  </div>
-</div>
-
-<footer class="site-footer surface depois" style="padding: 0 clamp(24px,5vw,64px) 64px;">
-    <div style="max-width: 1280px; margin: 0 auto; padding: 40px clamp(24px,5vw,56px) 28px; background: rgba(0,0,0,0.34); border-radius: 24px;">
+  <footer class="site-footer surface" style="padding: clamp(72px,10vw,110px) clamp(24px,5vw,64px) clamp(96px,14vw,120px);">
+    <div style="max-width: 1280px; margin: 0 auto; padding: 0 clamp(24px,5vw,56px) 28px;">
       <div style="display: flex; flex-wrap: wrap; gap: 40px; justify-content: space-between; margin-bottom: 30px;">
         <div style="max-width: 340px;">
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
