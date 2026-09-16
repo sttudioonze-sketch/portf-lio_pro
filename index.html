@@ -207,7 +207,11 @@
       position: absolute;
       z-index: 2;
       left: clamp(16px,4.5vw,24px);
-      top: 76px;
+      /* centrada entre o pe do menu (76px) e o pe da foto. A moldura da
+         foto tem overflow: hidden, entao a faixa util termina nela, nao
+         na headline — centralizar ate a headline cortaria a pilha. */
+      top: calc((76px + clamp(320px,94vw,620px)) / 2);
+      transform: translateY(-50%);
       display: flex;
       flex-direction: column;
       gap: 4px;
